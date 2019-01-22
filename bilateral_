@@ -1,0 +1,41 @@
+    double G_c = 20.0;
+    double G_s = 200;
+    double weight_co = 0.0;                             //declear the weight
+    double weight_sum = 0.0;                            //weight sum in Window filter
+    double a = 0.0;
+    unsigned char b ;
+    unsigned char c ;
+    unsigned char sum ;                               //sum of the num
+    unsigned char sum_dom;
+    int k,l = 0;                                      //counting index
+    
+    int i = 1, j = 1 ;                                //counting index of negihbour
+    
+    for(i = 1; i <= SizeRo ; i++){
+        for(j = 1; j <= SizeCo ; j++ ){
+            weight_sum = 0.0;
+            sum_dom = 0.0;
+            for (k = i-1; k <= i+1; k++) {
+                for (l = j-1; l <= j+1 ; l++) {
+                    if ((i != k) && (j != l)){
+                        
+                        a = ((i-k)*(i-k)+(j-l)*(j-l))/(2.0*G_c*G_c);
+                        c = (Imagenew[i][j][0])-(Imagenew[k][l][0]);
+                        b = (c*c)/(2.0*G_s*G_s);
+                        
+                        weight_co = exp(-a-b);
+                        
+                        // weight_co = exp(-(((i-k)*(i-k))+((j-l)*(j-l)))/(2.0*(G_c)*(G_c))-((abs(Imagenew[i][j][0]-Imagenew[k][l][0]))*(abs(Imagenew[i][j][0]-Imagenew[k][l][0])))/(2.0*G_s*G_s));
+                        
+                        sum = (unsigned char)(weight_co * Imagenew[k][l][0]);
+                        
+                        sum_dom  = sum + sum_dom;
+                        
+                        weight_sum = weight_co + weight_sum;
+                    }
+                }
+            }
+            Imageout[i-1][j-1][0] = (unsigned char)(sum_dom/weight_sum);
+            //go into next pixel
+        }
+    }
